@@ -1,0 +1,52 @@
+COMPILER N2Ext
+
+public String result;
+
+String extMount(String  unidade, String dezena){
+	String result;
+	if(dezena.isEmpty()){
+		result = unidade;	
+	}else{
+		result = dezena + ((unidade == "zero") ? "" : (" e " + unidade)); 
+	}
+	return result;
+}
+
+IGNORE '\t' + '\r' + '\n'
+
+PRODUCTIONS
+
+N2Ext 				(. String u = ""; String d = "";.)
+= Unidade<out u>	        (. result = u; .)
+ [Dezena<out d>]                (. result = extMount(u,d); .)
+.
+
+Unidade<out String v>
+									(. v = ""; .)
+=   "0"						(. v = "zero"; .)
+  | "1"						(. v = "um"; .)
+  | "2"						(. v = "dois"; .)
+  | "3"						(. v = "tres"; .)
+  | "4"						(. v = "quatro"; .)
+  | "5"						(. v = "cinco"; .)
+  | "6"						(. v = "seis"; .)
+  | "7"						(. v = "sete"; .)
+  | "8"						(. v = "oito"; .)
+  | "9"						(. v = "nove"; .)
+.
+
+Dezena<out String v>
+										(. v = ""; .)
+= "0"
+ |"1"								(. v = "dez"; .)
+ |"2"								(. v = "vinte"; .)
+ |"3"								(. v = "trinta"; .)
+ |"4"								(. v = "quarenta"; .)
+ |"5"								(. v = "cinquenta"; .)
+ |"6"								(. v = "sessenta"; .)
+ |"7"								(. v = "setenta"; .)
+ |"8"								(. v = "oitenta"; .)
+ |"9"								(. v = "noventa"; .)
+ .
+
+END N2Ext.

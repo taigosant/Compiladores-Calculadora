@@ -1,0 +1,49 @@
+COMPILER ExtCalc
+
+public int result;
+
+IGNORE '\t' + '\r' + '\n'
+
+PRODUCTIONS
+
+ExtCalc 				  (. int v1 = 0, v2 = 0; .)
+= Number<out v1> 			  (. result = v1; .)
+  [ "mais" Number<out v2> 	          (. result += v2; .)
+  ]
+
+  | Number<out v1>                        (. result = v1; .)
+   [ "vezes" Number<out v2>               (. result *= v2;.)
+   ]
+.
+
+Number<out int val>                      (. int vDezena = 0;  int vUnidade = 0; val = 0; .)
+= Dezena<out vDezena>                    (. val += vDezena; .)
+  [ "e" Unidade<out vUnidade>]           (. val += vUnidade; .)
+  | Unidade<out vUnidade>                (. val += vUnidade;.)
+.
+Unidade<out int v> 					(. v = 0; .)
+=   "zero" 							    (. v = 0; .)
+  | "um"	 						      (. v = 1; .)
+  | "dois"  						    (. v = 2; .)
+  | "tres"  						    (. v = 3; .)
+  | "quatro"  						  (. v = 4; .)
+  | "cinco"  						    (. v = 5; .)
+  | "seis"  						    (. v = 6; .)
+  | "sete"  						    (. v = 7; .)
+  | "oito"  						    (. v = 8; .)
+  | "nove"  						    (. v = 9; .)
+.
+
+Dezena<out int v> 					(. v = 0; .)
+=   "dez" 							    (. v = 10; .)
+  | "vinte"	 						    (. v = 20; .)
+  | "trinta"  						  (. v = 30; .)
+  | "quarenta"  						(. v = 40; .)
+  | "cinquenta"  						(. v = 50; .)
+  | "sessenta"  						(. v = 60; .)
+  | "setenta"  						  (. v = 70; .)
+  | "oitenta"  						  (. v = 80; .)
+  | "noventa"  						  (. v = 90; .)
+.
+
+END ExtCalc.

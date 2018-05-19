@@ -1,0 +1,28 @@
+COMPILER ExtCalc
+
+public int result;
+
+IGNORE '\t' + '\r' + '\n'
+
+PRODUCTIONS
+
+ExtCalc 							(. int v1 = 0, v2 = 0; .)
+= Unidade<out v1> 					(. result = v1; .)
+  [ "mais" Unidade<out v2>			(. result += v2; .)
+  ]									
+.
+
+Unidade<out int v> 					(. v = 0; .)
+=   "zero" 							(. v = 0; .)
+  | "um"	 						(. v = 1; .) 
+  | "dois"  						(. v = 2; .)
+  | "tres"  						(. v = 3; .)
+  | "quatro"  						(. v = 4; .)
+  | "cinco"  						(. v = 5; .)
+  | "seis"  						(. v = 6; .)
+  | "sete"  						(. v = 7; .)
+  | "oito"  						(. v = 8; .)
+  | "nove"  						(. v = 9; .)
+.
+
+END ExtCalc.

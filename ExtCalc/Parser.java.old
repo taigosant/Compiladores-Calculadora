@@ -1,0 +1,330 @@
+
+package ExtCalc;
+
+public class Parser {
+	public static final int _EOF = 0;
+	public static final int maxT = 23;
+
+	static final boolean T = true;
+	static final boolean x = false;
+	static final int minErrDist = 2;
+
+	public Token t;    // last recognized token
+	public Token la;   // lookahead token
+	int errDist = minErrDist;
+	
+	public Scanner scanner;
+	public Errors errors;
+
+	public int result;
+
+
+
+	public Parser(Scanner scanner) {
+		this.scanner = scanner;
+		errors = new Errors();
+	}
+
+	void SynErr (int n) {
+		if (errDist >= minErrDist) errors.SynErr(la.line, la.col, n);
+		errDist = 0;
+	}
+
+	public void SemErr (String msg) {
+		if (errDist >= minErrDist) errors.SemErr(t.line, t.col, msg);
+		errDist = 0;
+	}
+	
+	void Get () {
+		for (;;) {
+			t = la;
+			la = scanner.Scan();
+			if (la.kind <= maxT) {
+				++errDist;
+				break;
+			}
+
+			la = t;
+		}
+	}
+	
+	void Expect (int n) {
+		if (la.kind==n) Get(); else { SynErr(n); }
+	}
+	
+	boolean StartOf (int s) {
+		return set[s][la.kind];
+	}
+	
+	void ExpectWeak (int n, int follow) {
+		if (la.kind == n) Get();
+		else {
+			SynErr(n);
+			while (!StartOf(follow)) Get();
+		}
+	}
+	
+	boolean WeakSeparator (int n, int syFol, int repFol) {
+		int kind = la.kind;
+		if (kind == n) { Get(); return true; }
+		else if (StartOf(repFol)) return false;
+		else {
+			SynErr(n);
+			while (!(set[syFol][kind] || set[repFol][kind] || set[0][kind])) {
+				Get();
+				kind = la.kind;
+			}
+			return StartOf(syFol);
+		}
+	}
+	
+	void ExtCalc() {
+		int v1 = 0, v2 = 0; 
+		if (StartOf(1)) {
+			v1 = Number();
+			result = v1; 
+			if (la.kind == 1) {
+				Get();
+				v2 = Number();
+				result += v2; 
+			}
+		} else if (StartOf(1)) {
+			v1 = Number();
+			result = v1; 
+			if (la.kind == 2) {
+				Get();
+				v2 = Number();
+				result *= v2;
+			}
+		} else SynErr(24);
+	}
+
+	int  Number() {
+		int  val;
+		int vDezena = 0;  int vUnidade = 0; 
+		if (StartOf(2)) {
+			vDezena = Dezena();
+			val += vDezena; 
+			if (la.kind == 3) {
+				Get();
+				vUnidade = Unidade();
+			}
+			val += vUnidade; 
+		} else if (StartOf(3)) {
+			vUnidade = Unidade();
+			val += vUnidade;
+		} else SynErr(25);
+		return val;
+	}
+
+	int  Dezena() {
+		int  v;
+		v = 0; 
+		switch (la.kind) {
+		case 14: {
+			Get();
+			v = 10; 
+			break;
+		}
+		case 15: {
+			Get();
+			v = 20; 
+			break;
+		}
+		case 16: {
+			Get();
+			v = 30; 
+			break;
+		}
+		case 17: {
+			Get();
+			v = 40; 
+			break;
+		}
+		case 18: {
+			Get();
+			v = 50; 
+			break;
+		}
+		case 19: {
+			Get();
+			v = 60; 
+			break;
+		}
+		case 20: {
+			Get();
+			v = 70; 
+			break;
+		}
+		case 21: {
+			Get();
+			v = 80; 
+			break;
+		}
+		case 22: {
+			Get();
+			v = 90; 
+			break;
+		}
+		default: SynErr(26); break;
+		}
+		return v;
+	}
+
+	int  Unidade() {
+		int  v;
+		v = 0; 
+		switch (la.kind) {
+		case 4: {
+			Get();
+			v = 0; 
+			break;
+		}
+		case 5: {
+			Get();
+			v = 1; 
+			break;
+		}
+		case 6: {
+			Get();
+			v = 2; 
+			break;
+		}
+		case 7: {
+			Get();
+			v = 3; 
+			break;
+		}
+		case 8: {
+			Get();
+			v = 4; 
+			break;
+		}
+		case 9: {
+			Get();
+			v = 5; 
+			break;
+		}
+		case 10: {
+			Get();
+			v = 6; 
+			break;
+		}
+		case 11: {
+			Get();
+			v = 7; 
+			break;
+		}
+		case 12: {
+			Get();
+			v = 8; 
+			break;
+		}
+		case 13: {
+			Get();
+			v = 9; 
+			break;
+		}
+		default: SynErr(27); break;
+		}
+		return v;
+	}
+
+
+
+	public void Parse() {
+		la = new Token();
+		la.val = "";		
+		Get();
+		ExtCalc();
+		Expect(0);
+
+	}
+
+	private static final boolean[][] set = {
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,x, x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x},
+		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x}
+
+	};
+} // end Parser
+
+
+class Errors {
+	public int count = 0;                                    // number of errors detected
+	public java.io.PrintStream errorStream = System.out;     // error messages go to this stream
+	public String errMsgFormat = "-- line {0} col {1}: {2}"; // 0=line, 1=column, 2=text
+	
+	protected void printMsg(int line, int column, String msg) {
+		StringBuffer b = new StringBuffer(errMsgFormat);
+		int pos = b.indexOf("{0}");
+		if (pos >= 0) { b.delete(pos, pos+3); b.insert(pos, line); }
+		pos = b.indexOf("{1}");
+		if (pos >= 0) { b.delete(pos, pos+3); b.insert(pos, column); }
+		pos = b.indexOf("{2}");
+		if (pos >= 0) b.replace(pos, pos+3, msg);
+		errorStream.println(b.toString());
+	}
+	
+	public void SynErr (int line, int col, int n) {
+		String s;
+		switch (n) {
+			case 0: s = "EOF expected"; break;
+			case 1: s = "\"mais\" expected"; break;
+			case 2: s = "\"vezes\" expected"; break;
+			case 3: s = "\"e\" expected"; break;
+			case 4: s = "\"zero\" expected"; break;
+			case 5: s = "\"um\" expected"; break;
+			case 6: s = "\"dois\" expected"; break;
+			case 7: s = "\"tres\" expected"; break;
+			case 8: s = "\"quatro\" expected"; break;
+			case 9: s = "\"cinco\" expected"; break;
+			case 10: s = "\"seis\" expected"; break;
+			case 11: s = "\"sete\" expected"; break;
+			case 12: s = "\"oito\" expected"; break;
+			case 13: s = "\"nove\" expected"; break;
+			case 14: s = "\"dez\" expected"; break;
+			case 15: s = "\"vinte\" expected"; break;
+			case 16: s = "\"trinta\" expected"; break;
+			case 17: s = "\"quarenta\" expected"; break;
+			case 18: s = "\"cinquenta\" expected"; break;
+			case 19: s = "\"sessenta\" expected"; break;
+			case 20: s = "\"setenta\" expected"; break;
+			case 21: s = "\"oitenta\" expected"; break;
+			case 22: s = "\"noventa\" expected"; break;
+			case 23: s = "??? expected"; break;
+			case 24: s = "invalid ExtCalc"; break;
+			case 25: s = "invalid Number"; break;
+			case 26: s = "invalid Dezena"; break;
+			case 27: s = "invalid Unidade"; break;
+			default: s = "error " + n; break;
+		}
+		printMsg(line, col, s);
+		count++;
+	}
+
+	public void SemErr (int line, int col, String s) {	
+		printMsg(line, col, s);
+		count++;
+	}
+	
+	public void SemErr (String s) {
+		errorStream.println(s);
+		count++;
+	}
+	
+	public void Warning (int line, int col, String s) {	
+		printMsg(line, col, s);
+	}
+	
+	public void Warning (String s) {
+		errorStream.println(s);
+	}
+} // Errors
+
+
+class FatalError extends RuntimeException {
+	public static final long serialVersionUID = 1L;
+	public FatalError(String s) { super(s); }
+}

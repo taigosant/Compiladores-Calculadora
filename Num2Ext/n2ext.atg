@@ -1,0 +1,27 @@
+COMPILER N2Ext
+
+public String result;
+
+IGNORE '\t' + '\r' + '\n'
+
+PRODUCTIONS
+
+N2Ext 						(. String u = ""; .)
+= Unidade<out u>			(. result = u; .) 
+.
+
+Unidade<out String v>		
+							(. v = ""; .)
+=   "0"						(. v = "zero"; .)
+  | "1"						(. v = "um"; .)
+  | "2"						(. v = "dois"; .)
+  | "3"						(. v = "tres"; .)
+  | "4"						(. v = "quatro"; .)
+  | "5"						(. v = "cinco"; .)
+  | "6"						(. v = "seis"; .)
+  | "7"						(. v = "sete"; .)
+  | "8"						(. v = "oito"; .)
+  | "9"						(. v = "nove"; .)
+.
+
+END N2Ext.
