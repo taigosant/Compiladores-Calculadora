@@ -6,44 +6,100 @@ IGNORE '\t' + '\r' + '\n'
 
 PRODUCTIONS
 
-ExtCalc 				  (. int v1 = 0, v2 = 0; .)
-= Number<out v1> 			  (. result = v1; .)
-  [ "mais" Number<out v2> 	          (. result += v2; .)
-  ]
-
-  | Number<out v1>                        (. result = v1; .)
-   [ "vezes" Number<out v2>               (. result *= v2;.)
-   ]
+ExtCalc 				               (. int v1 = 0, v2 = 0; .)
+= Number<out v1> 			         (. result = v1; .)
+[ "mais" Number<out v2> 	     (. result += v2; .)
+]
+| Number<out v1>               (. result = v1; .)
+[ "vezes" Number<out v2>       (. result *= v2;.)
+]
 .
 
-Number<out int val>                      (. int vDezena = 0;  int vUnidade = 0; val = 0; .)
-= Dezena<out vDezena>                    (. val += vDezena; .)
-  [ "e" Unidade<out vUnidade>]           (. val += vUnidade; .)
-  | Unidade<out vUnidade>                (. val += vUnidade;.)
+NumberMilhar<out int val>       (. val = 0; int aux = 0;.)
+= Milhares<out aux>               (. val += aux; aux = 0; .)
+[["e"]
+( NumberCentena<out aux>       (. val += aux; aux = 0; .)
+| NumberDezena<out aux>        (. val += aux; aux = 0; .)
+| Teens <out aux>              (. val += aux; aux = 0; .)
+| Unidade <out aux>            (. val += aux; aux = 0; .)
+)
+]
 .
-Unidade<out int v> 					(. v = 0; .)
-=   "zero" 							    (. v = 0; .)
-  | "um"	 						      (. v = 1; .)
-  | "dois"  						    (. v = 2; .)
-  | "tres"  						    (. v = 3; .)
-  | "quatro"  						  (. v = 4; .)
-  | "cinco"  						    (. v = 5; .)
-  | "seis"  						    (. v = 6; .)
-  | "sete"  						    (. v = 7; .)
-  | "oito"  						    (. v = 8; .)
-  | "nove"  						    (. v = 9; .)
+
+NumberCentena<out int val>       (. val = 0; int aux = 0; .)
+= Centena<out aux>                (. val += aux; aux = 0;  .)
+["e"
+(Unidade<out aux>              (. val += aux; aux = 0;  .)
+ |  Teens<out aux>                (. val += aux; aux = 0;  .)
+ |  NumberDezena<out aux>         (. val += aux; aux = 0;  .)
+)
+]
+.
+
+NumberDezena<out int val>         (. val = 0; int aux = 0; .)
+= Dezena<out aux>                 (. val += aux; aux = 0; .)
+["e" Unidade<out aux>             (. val += aux;.)
+]
+.
+
+Number<out int val>                (. val = 0; int aux = 0; .)
+= NumberMilhar<out aux>            (. val = aux; .)
+| NumberCentena<out aux>           (. val = aux; .)
+| NumberDezena<out aux>            (. val = aux; .)
+| Teens<out aux>                   (. val = aux; .)
+| Unidade<out aux>                 (. val = aux; .)
+.
+Unidade<out int v> 					    (. v = 0; .)
+=   "zero" 						          (. v = 0; .)
+  | "um"	 					            (. v = 1; .)
+  | "dois"  						        (. v = 2; .)
+  | "tres"  						        (. v = 3; .)
+  | "quatro"  						      (. v = 4; .)
+  | "cinco"  						        (. v = 5; .)
+  | "seis"  						        (. v = 6; .)
+  | "sete"  						        (. v = 7; .)
+  | "oito"  						        (. v = 8; .)
+  | "nove"  						        (. v = 9; .)
 .
 
 Dezena<out int v> 					(. v = 0; .)
-=   "dez" 							    (. v = 10; .)
-  | "vinte"	 						    (. v = 20; .)
-  | "trinta"  						  (. v = 30; .)
-  | "quarenta"  						(. v = 40; .)
-  | "cinquenta"  						(. v = 50; .)
-  | "sessenta"  						(. v = 60; .)
-  | "setenta"  						  (. v = 70; .)
-  | "oitenta"  						  (. v = 80; .)
-  | "noventa"  						  (. v = 90; .)
+=   "dez" 						(. v = 10; .)
+  | "vinte"	 					(. v = 20; .)
+  | "trinta"  						(. v = 30; .)
+  | "quarenta"  					(. v = 40; .)
+  | "cinquenta"  					(. v = 50; .)
+  | "sessenta"  					(. v = 60; .)
+  | "setenta"  						(. v = 70; .)
+  | "oitenta"  						(. v = 80; .)
+  | "noventa"  						(. v = 90; .)
 .
 
+Teens<out int v> 					(. v = 0; .)
+=   "onze" 						(. v = 11; .)
+  | "doze"	 					(. v = 12; .)
+  | "treze"  						(. v = 13; .)
+  | "quatorze"  					(. v = 14; .)
+  | "quinze"     					(. v = 15; .)
+  | "dezesseis"  					(. v = 16; .)
+  | "dezessete"  					(. v = 17; .)
+  | "dezoito"  						(. v = 18; .)
+  | "dezenove"  				        (. v = 19; .)
+.
+
+Centena<out int v> 					   (. v = 0; .)
+=   "cem" 						         (. v = 100; .)
+  | "cento"                    (. v = 100;.)
+  | "duzentos"	 					      (. v = 200; .)
+  | "trezentos"  						    (. v = 300; .)
+  | "quatrocentos"  					  (. v = 400; .)
+  | "quinhentos"     					  (. v = 500; .)
+  | "seiscentos"  					   (. v = 600; .)
+  | "setecentos"  					   (. v = 700; .)
+  | "oitocentos"  						  (. v = 800; .)
+  | "novecentos"  				     (. v = 900; .)
+.
+
+Milhares<out int v> 					 (. v = 0; .)
+=   "mil" 						         (. v = 1000; .)
+.
 END ExtCalc.

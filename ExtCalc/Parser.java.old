@@ -3,7 +3,7 @@ package ExtCalc;
 
 public class Parser {
 	public static final int _EOF = 0;
-	public static final int maxT = 23;
+	public static final int maxT = 43;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -96,79 +96,96 @@ public class Parser {
 				v2 = Number();
 				result *= v2;
 			}
-		} else SynErr(24);
+		} else SynErr(44);
 	}
 
 	int  Number() {
 		int  val;
-		int vDezena = 0;  int vUnidade = 0; 
-		if (StartOf(2)) {
-			vDezena = Dezena();
-			val += vDezena; 
-			if (la.kind == 3) {
-				Get();
-				vUnidade = Unidade();
-			}
-			val += vUnidade; 
+		val = 0; int aux = 0; 
+		if (la.kind == 42) {
+			aux = NumberMilhar();
+			val = aux; 
+		} else if (StartOf(2)) {
+			aux = NumberCentena();
+			val = aux; 
 		} else if (StartOf(3)) {
-			vUnidade = Unidade();
-			val += vUnidade;
-		} else SynErr(25);
+			aux = NumberDezena();
+			val = aux; 
+		} else if (StartOf(4)) {
+			aux = Teens();
+			val = aux; 
+		} else if (StartOf(5)) {
+			aux = Unidade();
+			val = aux; 
+		} else SynErr(45);
 		return val;
 	}
 
-	int  Dezena() {
+	int  NumberMilhar() {
+		int  val;
+		val = 0; int aux = 0;
+		aux = Milhares();
+		val += aux; aux = 0; 
+		if (StartOf(6)) {
+			if (la.kind == 3) {
+				Get();
+			}
+			if (StartOf(2)) {
+				aux = NumberCentena();
+				val += aux; aux = 0; 
+			} else if (la.kind == 3) {
+				Get();
+				aux = NumberDezena();
+				val += aux; aux = 0; 
+			} else if (la.kind == 3) {
+				Get();
+				aux = Unidade();
+				val += aux; aux = 0; 
+			} else SynErr(46);
+		}
+		return val;
+	}
+
+	int  Milhares() {
 		int  v;
 		v = 0; 
-		switch (la.kind) {
-		case 14: {
-			Get();
-			v = 10; 
-			break;
-		}
-		case 15: {
-			Get();
-			v = 20; 
-			break;
-		}
-		case 16: {
-			Get();
-			v = 30; 
-			break;
-		}
-		case 17: {
-			Get();
-			v = 40; 
-			break;
-		}
-		case 18: {
-			Get();
-			v = 50; 
-			break;
-		}
-		case 19: {
-			Get();
-			v = 60; 
-			break;
-		}
-		case 20: {
-			Get();
-			v = 70; 
-			break;
-		}
-		case 21: {
-			Get();
-			v = 80; 
-			break;
-		}
-		case 22: {
-			Get();
-			v = 90; 
-			break;
-		}
-		default: SynErr(26); break;
-		}
+		Expect(42);
+		v = 1000; 
 		return v;
+	}
+
+	int  NumberCentena() {
+		int  val;
+		val = 0; int aux = 0; 
+		aux = Centena();
+		val += aux; aux = 0;  
+		if (la.kind == 3) {
+			Get();
+			if (StartOf(5)) {
+				aux = Unidade();
+				val += aux; aux = 0;  
+			} else if (StartOf(4)) {
+				aux = Teens();
+				val += aux; aux = 0;  
+			} else if (StartOf(3)) {
+				aux = NumberDezena();
+				val += aux; aux = 0;  
+			} else SynErr(47);
+		}
+		return val;
+	}
+
+	int  NumberDezena() {
+		int  val;
+		val = 0; int aux = 0; 
+		aux = Dezena();
+		val += aux; aux = 0; 
+		if (la.kind == 3) {
+			Get();
+			aux = Unidade();
+			val += aux;
+		}
+		return val;
 	}
 
 	int  Unidade() {
@@ -225,7 +242,174 @@ public class Parser {
 			v = 9; 
 			break;
 		}
-		default: SynErr(27); break;
+		default: SynErr(48); break;
+		}
+		return v;
+	}
+
+	int  Centena() {
+		int  v;
+		v = 0; 
+		switch (la.kind) {
+		case 32: {
+			Get();
+			v = 100; 
+			break;
+		}
+		case 33: {
+			Get();
+			v = 100;
+			break;
+		}
+		case 34: {
+			Get();
+			v = 200; 
+			break;
+		}
+		case 35: {
+			Get();
+			v = 300; 
+			break;
+		}
+		case 36: {
+			Get();
+			v = 400; 
+			break;
+		}
+		case 37: {
+			Get();
+			v = 500; 
+			break;
+		}
+		case 38: {
+			Get();
+			v = 600; 
+			break;
+		}
+		case 39: {
+			Get();
+			v = 700; 
+			break;
+		}
+		case 40: {
+			Get();
+			v = 800; 
+			break;
+		}
+		case 41: {
+			Get();
+			v = 900; 
+			break;
+		}
+		default: SynErr(49); break;
+		}
+		return v;
+	}
+
+	int  Teens() {
+		int  v;
+		v = 0; 
+		switch (la.kind) {
+		case 23: {
+			Get();
+			v = 11; 
+			break;
+		}
+		case 24: {
+			Get();
+			v = 12; 
+			break;
+		}
+		case 25: {
+			Get();
+			v = 13; 
+			break;
+		}
+		case 26: {
+			Get();
+			v = 14; 
+			break;
+		}
+		case 27: {
+			Get();
+			v = 15; 
+			break;
+		}
+		case 28: {
+			Get();
+			v = 16; 
+			break;
+		}
+		case 29: {
+			Get();
+			v = 17; 
+			break;
+		}
+		case 30: {
+			Get();
+			v = 18; 
+			break;
+		}
+		case 31: {
+			Get();
+			v = 19; 
+			break;
+		}
+		default: SynErr(50); break;
+		}
+		return v;
+	}
+
+	int  Dezena() {
+		int  v;
+		v = 0; 
+		switch (la.kind) {
+		case 14: {
+			Get();
+			v = 10; 
+			break;
+		}
+		case 15: {
+			Get();
+			v = 20; 
+			break;
+		}
+		case 16: {
+			Get();
+			v = 30; 
+			break;
+		}
+		case 17: {
+			Get();
+			v = 40; 
+			break;
+		}
+		case 18: {
+			Get();
+			v = 50; 
+			break;
+		}
+		case 19: {
+			Get();
+			v = 60; 
+			break;
+		}
+		case 20: {
+			Get();
+			v = 70; 
+			break;
+		}
+		case 21: {
+			Get();
+			v = 80; 
+			break;
+		}
+		case 22: {
+			Get();
+			v = 90; 
+			break;
+		}
+		default: SynErr(51); break;
 		}
 		return v;
 	}
@@ -242,10 +426,13 @@ public class Parser {
 	}
 
 	private static final boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,x, x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x},
-		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,x, x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x}
 
 	};
 } // end Parser
@@ -293,11 +480,35 @@ class Errors {
 			case 20: s = "\"setenta\" expected"; break;
 			case 21: s = "\"oitenta\" expected"; break;
 			case 22: s = "\"noventa\" expected"; break;
-			case 23: s = "??? expected"; break;
-			case 24: s = "invalid ExtCalc"; break;
-			case 25: s = "invalid Number"; break;
-			case 26: s = "invalid Dezena"; break;
-			case 27: s = "invalid Unidade"; break;
+			case 23: s = "\"onze\" expected"; break;
+			case 24: s = "\"doze\" expected"; break;
+			case 25: s = "\"treze\" expected"; break;
+			case 26: s = "\"quatorze\" expected"; break;
+			case 27: s = "\"quinze\" expected"; break;
+			case 28: s = "\"dezesseis\" expected"; break;
+			case 29: s = "\"dezessete\" expected"; break;
+			case 30: s = "\"dezoito\" expected"; break;
+			case 31: s = "\"dezenove\" expected"; break;
+			case 32: s = "\"cem\" expected"; break;
+			case 33: s = "\"cento\" expected"; break;
+			case 34: s = "\"duzentos\" expected"; break;
+			case 35: s = "\"trezentos\" expected"; break;
+			case 36: s = "\"quatrocentos\" expected"; break;
+			case 37: s = "\"quinhentos\" expected"; break;
+			case 38: s = "\"seiscentos\" expected"; break;
+			case 39: s = "\"setecentos\" expected"; break;
+			case 40: s = "\"oitocentos\" expected"; break;
+			case 41: s = "\"novecentos\" expected"; break;
+			case 42: s = "\"mil\" expected"; break;
+			case 43: s = "??? expected"; break;
+			case 44: s = "invalid ExtCalc"; break;
+			case 45: s = "invalid Number"; break;
+			case 46: s = "invalid NumberMilhar"; break;
+			case 47: s = "invalid NumberCentena"; break;
+			case 48: s = "invalid Unidade"; break;
+			case 49: s = "invalid Centena"; break;
+			case 50: s = "invalid Teens"; break;
+			case 51: s = "invalid Dezena"; break;
 			default: s = "error " + n; break;
 		}
 		printMsg(line, col, s);

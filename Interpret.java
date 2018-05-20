@@ -27,13 +27,15 @@ public class Interpret
                                  ByteArrayInputStream(str.getBytes("UTF-8"));
             ExtCalc.Parser ecp = new ExtCalc.Parser(new ExtCalc.Scanner(stream));
             ecp.Parse();
-            String result = reverse(String.valueOf(ecp.result));
-            stream = new ByteArrayInputStream(result.getBytes("UTF-8"));
-            Num2Ext.Parser n2e = new Num2Ext.Parser(new Num2Ext.Scanner(stream));
-            n2e.Parse();
-            System.out.println("  " + n2e.result);            
-            
-        } catch(IOException e) {
+//            String result = reverse(String.valueOf(ecp.result));
+//            stream = new ByteArrayInputStream(result.getBytes("UTF-8"));
+//            Num2Ext.Parser n2e = new Num2Ext.Parser(new Num2Ext.Scanner(stream));
+//            n2e.Parse();
+//            System.out.println("  " + n2e.result);
+             String result = String.valueOf(ecp.result);
+             System.out.println(result);
+
+         } catch(IOException e) {
              System.out.println("para de zoa ai meu");
              e.printStackTrace();
         }
