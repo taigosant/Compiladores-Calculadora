@@ -6,14 +6,38 @@ IGNORE '\t' + '\r' + '\n'
 
 PRODUCTIONS
 
-ExtCalc 				               (. int v1 = 0, v2 = 0; .)
+ExtCalc                         (. int v = 0; .)
+= Expression<out v>             (. result = v; .)
+.
+
+Expression<out int val>         (. int aux = 0;  val = 0;.)
+= Term<out aux>                 (. val+= aux; aux = 0;.)
+{"mais"
+Term<out aux>                   (. val += aux; aux = 0; .)
+}
+.
+
+Term<out int val>               (. int aux = 0; val = 0; .)
+= Factor<out aux>               (. val += aux; aux = 0; .)
+{"vezes"
+Factor<out aux>                 (. val *= aux; aux = 0; .)
+}
+.
+
+Factor<out int val>            (. int aux = 0; val = 0; .)
+= Number<out aux>              (. val += aux; aux = 0; .)
+| "(" Expression<out aux>      (. val += aux; aux = 0; .)
+")"
+.
+
+/* ExtCalc 				               (. int v1 = 0, v2 = 0; .)
 = Number<out v1> 			         (. result = v1; .)
 [ "mais" Number<out v2> 	     (. result += v2; .)
 ]
 | Number<out v1>               (. result = v1; .)
 [ "vezes" Number<out v2>       (. result *= v2;.)
 ]
-.
+. */
 
 NumberMilhar<out int val>       (. val = 0; int aux = 0;.)
 = Milhares<out aux>               (. val += aux; aux = 0; .)

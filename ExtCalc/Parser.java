@@ -3,7 +3,7 @@ package ExtCalc;
 
 public class Parser {
 	public static final int _EOF = 0;
-	public static final int maxT = 43;
+	public static final int maxT = 45;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -79,30 +79,56 @@ public class Parser {
 	}
 	
 	void ExtCalc() {
-		int v1 = 0, v2 = 0; 
+		int v = 0; 
+		v = Expression();
+		result = v; 
+	}
+
+	int  Expression() {
+		int  val;
+		int aux = 0;  val = 0;
+		aux = Term();
+		val+= aux; aux = 0;
+		while (la.kind == 1) {
+			Get();
+			aux = Term();
+			val += aux; aux = 0; 
+		}
+		return val;
+	}
+
+	int  Term() {
+		int  val;
+		int aux = 0; val = 0; 
+		aux = Factor();
+		val += aux; aux = 0; 
+		while (la.kind == 2) {
+			Get();
+			aux = Factor();
+			val *= aux; aux = 0; 
+		}
+		return val;
+	}
+
+	int  Factor() {
+		int  val;
+		int aux = 0; val = 0; 
 		if (StartOf(1)) {
-			v1 = Number();
-			result = v1; 
-			if (la.kind == 1) {
-				Get();
-				v2 = Number();
-				result += v2; 
-			}
-		} else if (StartOf(1)) {
-			v1 = Number();
-			result = v1; 
-			if (la.kind == 2) {
-				Get();
-				v2 = Number();
-				result *= v2;
-			}
-		} else SynErr(44);
+			aux = Number();
+			val += aux; aux = 0; 
+		} else if (la.kind == 3) {
+			Get();
+			aux = Expression();
+			val += aux; aux = 0; 
+			Expect(4);
+		} else SynErr(46);
+		return val;
 	}
 
 	int  Number() {
 		int  val;
 		val = 0; int aux = 0; 
-		if (la.kind == 42) {
+		if (la.kind == 44) {
 			aux = NumberMilhar();
 			val = aux; 
 		} else if (StartOf(2)) {
@@ -117,7 +143,7 @@ public class Parser {
 		} else if (StartOf(5)) {
 			aux = Unidade();
 			val = aux; 
-		} else SynErr(45);
+		} else SynErr(47);
 		return val;
 	}
 
@@ -127,7 +153,7 @@ public class Parser {
 		aux = Milhares();
 		val += aux; aux = 0; 
 		if (StartOf(6)) {
-			if (la.kind == 3) {
+			if (la.kind == 5) {
 				Get();
 			}
 			if (StartOf(2)) {
@@ -142,7 +168,7 @@ public class Parser {
 			} else if (StartOf(5)) {
 				aux = Unidade();
 				val += aux; aux = 0; 
-			} else SynErr(46);
+			} else SynErr(48);
 		}
 		return val;
 	}
@@ -150,7 +176,7 @@ public class Parser {
 	int  Milhares() {
 		int  v;
 		v = 0; 
-		Expect(42);
+		Expect(44);
 		v = 1000; 
 		return v;
 	}
@@ -160,7 +186,7 @@ public class Parser {
 		val = 0; int aux = 0; 
 		aux = Centena();
 		val += aux; aux = 0;  
-		if (la.kind == 3) {
+		if (la.kind == 5) {
 			Get();
 			if (StartOf(5)) {
 				aux = Unidade();
@@ -171,7 +197,7 @@ public class Parser {
 			} else if (StartOf(3)) {
 				aux = NumberDezena();
 				val += aux; aux = 0;  
-			} else SynErr(47);
+			} else SynErr(49);
 		}
 		return val;
 	}
@@ -181,7 +207,7 @@ public class Parser {
 		val = 0; int aux = 0; 
 		aux = Dezena();
 		val += aux; aux = 0; 
-		if (la.kind == 3) {
+		if (la.kind == 5) {
 			Get();
 			aux = Unidade();
 			val += aux;
@@ -193,52 +219,52 @@ public class Parser {
 		int  v;
 		v = 0; 
 		switch (la.kind) {
-		case 23: {
+		case 25: {
 			Get();
 			v = 11; 
 			break;
 		}
-		case 24: {
+		case 26: {
 			Get();
 			v = 12; 
 			break;
 		}
-		case 25: {
+		case 27: {
 			Get();
 			v = 13; 
 			break;
 		}
-		case 26: {
+		case 28: {
 			Get();
 			v = 14; 
 			break;
 		}
-		case 27: {
+		case 29: {
 			Get();
 			v = 15; 
 			break;
 		}
-		case 28: {
+		case 30: {
 			Get();
 			v = 16; 
 			break;
 		}
-		case 29: {
+		case 31: {
 			Get();
 			v = 17; 
 			break;
 		}
-		case 30: {
+		case 32: {
 			Get();
 			v = 18; 
 			break;
 		}
-		case 31: {
+		case 33: {
 			Get();
 			v = 19; 
 			break;
 		}
-		default: SynErr(48); break;
+		default: SynErr(50); break;
 		}
 		return v;
 	}
@@ -247,57 +273,57 @@ public class Parser {
 		int  v;
 		v = 0; 
 		switch (la.kind) {
-		case 4: {
+		case 6: {
 			Get();
 			v = 0; 
 			break;
 		}
-		case 5: {
+		case 7: {
 			Get();
 			v = 1; 
 			break;
 		}
-		case 6: {
+		case 8: {
 			Get();
 			v = 2; 
 			break;
 		}
-		case 7: {
+		case 9: {
 			Get();
 			v = 3; 
 			break;
 		}
-		case 8: {
+		case 10: {
 			Get();
 			v = 4; 
 			break;
 		}
-		case 9: {
+		case 11: {
 			Get();
 			v = 5; 
 			break;
 		}
-		case 10: {
+		case 12: {
 			Get();
 			v = 6; 
 			break;
 		}
-		case 11: {
+		case 13: {
 			Get();
 			v = 7; 
 			break;
 		}
-		case 12: {
+		case 14: {
 			Get();
 			v = 8; 
 			break;
 		}
-		case 13: {
+		case 15: {
 			Get();
 			v = 9; 
 			break;
 		}
-		default: SynErr(49); break;
+		default: SynErr(51); break;
 		}
 		return v;
 	}
@@ -306,57 +332,57 @@ public class Parser {
 		int  v;
 		v = 0; 
 		switch (la.kind) {
-		case 32: {
+		case 34: {
 			Get();
 			v = 100; 
 			break;
 		}
-		case 33: {
+		case 35: {
 			Get();
 			v = 100;
 			break;
 		}
-		case 34: {
+		case 36: {
 			Get();
 			v = 200; 
 			break;
 		}
-		case 35: {
+		case 37: {
 			Get();
 			v = 300; 
 			break;
 		}
-		case 36: {
+		case 38: {
 			Get();
 			v = 400; 
 			break;
 		}
-		case 37: {
+		case 39: {
 			Get();
 			v = 500; 
 			break;
 		}
-		case 38: {
+		case 40: {
 			Get();
 			v = 600; 
 			break;
 		}
-		case 39: {
+		case 41: {
 			Get();
 			v = 700; 
 			break;
 		}
-		case 40: {
+		case 42: {
 			Get();
 			v = 800; 
 			break;
 		}
-		case 41: {
+		case 43: {
 			Get();
 			v = 900; 
 			break;
 		}
-		default: SynErr(50); break;
+		default: SynErr(52); break;
 		}
 		return v;
 	}
@@ -365,52 +391,52 @@ public class Parser {
 		int  v;
 		v = 0; 
 		switch (la.kind) {
-		case 14: {
+		case 16: {
 			Get();
 			v = 10; 
 			break;
 		}
-		case 15: {
+		case 17: {
 			Get();
 			v = 20; 
 			break;
 		}
-		case 16: {
+		case 18: {
 			Get();
 			v = 30; 
 			break;
 		}
-		case 17: {
+		case 19: {
 			Get();
 			v = 40; 
 			break;
 		}
-		case 18: {
+		case 20: {
 			Get();
 			v = 50; 
 			break;
 		}
-		case 19: {
+		case 21: {
 			Get();
 			v = 60; 
 			break;
 		}
-		case 20: {
+		case 22: {
 			Get();
 			v = 70; 
 			break;
 		}
-		case 21: {
+		case 23: {
 			Get();
 			v = 80; 
 			break;
 		}
-		case 22: {
+		case 24: {
 			Get();
 			v = 90; 
 			break;
 		}
-		default: SynErr(51); break;
+		default: SynErr(53); break;
 		}
 		return v;
 	}
@@ -427,13 +453,13 @@ public class Parser {
 	}
 
 	private static final boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,x, x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,x, T,T,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,x,x,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,x,x, x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, T,T,T,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,T,T, T,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,x,x,x, x,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, x,x,x}
 
 	};
 } // end Parser
@@ -461,55 +487,57 @@ class Errors {
 			case 0: s = "EOF expected"; break;
 			case 1: s = "\"mais\" expected"; break;
 			case 2: s = "\"vezes\" expected"; break;
-			case 3: s = "\"e\" expected"; break;
-			case 4: s = "\"zero\" expected"; break;
-			case 5: s = "\"um\" expected"; break;
-			case 6: s = "\"dois\" expected"; break;
-			case 7: s = "\"tres\" expected"; break;
-			case 8: s = "\"quatro\" expected"; break;
-			case 9: s = "\"cinco\" expected"; break;
-			case 10: s = "\"seis\" expected"; break;
-			case 11: s = "\"sete\" expected"; break;
-			case 12: s = "\"oito\" expected"; break;
-			case 13: s = "\"nove\" expected"; break;
-			case 14: s = "\"dez\" expected"; break;
-			case 15: s = "\"vinte\" expected"; break;
-			case 16: s = "\"trinta\" expected"; break;
-			case 17: s = "\"quarenta\" expected"; break;
-			case 18: s = "\"cinquenta\" expected"; break;
-			case 19: s = "\"sessenta\" expected"; break;
-			case 20: s = "\"setenta\" expected"; break;
-			case 21: s = "\"oitenta\" expected"; break;
-			case 22: s = "\"noventa\" expected"; break;
-			case 23: s = "\"onze\" expected"; break;
-			case 24: s = "\"doze\" expected"; break;
-			case 25: s = "\"treze\" expected"; break;
-			case 26: s = "\"quatorze\" expected"; break;
-			case 27: s = "\"quinze\" expected"; break;
-			case 28: s = "\"dezesseis\" expected"; break;
-			case 29: s = "\"dezessete\" expected"; break;
-			case 30: s = "\"dezoito\" expected"; break;
-			case 31: s = "\"dezenove\" expected"; break;
-			case 32: s = "\"cem\" expected"; break;
-			case 33: s = "\"cento\" expected"; break;
-			case 34: s = "\"duzentos\" expected"; break;
-			case 35: s = "\"trezentos\" expected"; break;
-			case 36: s = "\"quatrocentos\" expected"; break;
-			case 37: s = "\"quinhentos\" expected"; break;
-			case 38: s = "\"seiscentos\" expected"; break;
-			case 39: s = "\"setecentos\" expected"; break;
-			case 40: s = "\"oitocentos\" expected"; break;
-			case 41: s = "\"novecentos\" expected"; break;
-			case 42: s = "\"mil\" expected"; break;
-			case 43: s = "??? expected"; break;
-			case 44: s = "invalid ExtCalc"; break;
-			case 45: s = "invalid Number"; break;
-			case 46: s = "invalid NumberMilhar"; break;
-			case 47: s = "invalid NumberCentena"; break;
-			case 48: s = "invalid Teens"; break;
-			case 49: s = "invalid Unidade"; break;
-			case 50: s = "invalid Centena"; break;
-			case 51: s = "invalid Dezena"; break;
+			case 3: s = "\"(\" expected"; break;
+			case 4: s = "\")\" expected"; break;
+			case 5: s = "\"e\" expected"; break;
+			case 6: s = "\"zero\" expected"; break;
+			case 7: s = "\"um\" expected"; break;
+			case 8: s = "\"dois\" expected"; break;
+			case 9: s = "\"tres\" expected"; break;
+			case 10: s = "\"quatro\" expected"; break;
+			case 11: s = "\"cinco\" expected"; break;
+			case 12: s = "\"seis\" expected"; break;
+			case 13: s = "\"sete\" expected"; break;
+			case 14: s = "\"oito\" expected"; break;
+			case 15: s = "\"nove\" expected"; break;
+			case 16: s = "\"dez\" expected"; break;
+			case 17: s = "\"vinte\" expected"; break;
+			case 18: s = "\"trinta\" expected"; break;
+			case 19: s = "\"quarenta\" expected"; break;
+			case 20: s = "\"cinquenta\" expected"; break;
+			case 21: s = "\"sessenta\" expected"; break;
+			case 22: s = "\"setenta\" expected"; break;
+			case 23: s = "\"oitenta\" expected"; break;
+			case 24: s = "\"noventa\" expected"; break;
+			case 25: s = "\"onze\" expected"; break;
+			case 26: s = "\"doze\" expected"; break;
+			case 27: s = "\"treze\" expected"; break;
+			case 28: s = "\"quatorze\" expected"; break;
+			case 29: s = "\"quinze\" expected"; break;
+			case 30: s = "\"dezesseis\" expected"; break;
+			case 31: s = "\"dezessete\" expected"; break;
+			case 32: s = "\"dezoito\" expected"; break;
+			case 33: s = "\"dezenove\" expected"; break;
+			case 34: s = "\"cem\" expected"; break;
+			case 35: s = "\"cento\" expected"; break;
+			case 36: s = "\"duzentos\" expected"; break;
+			case 37: s = "\"trezentos\" expected"; break;
+			case 38: s = "\"quatrocentos\" expected"; break;
+			case 39: s = "\"quinhentos\" expected"; break;
+			case 40: s = "\"seiscentos\" expected"; break;
+			case 41: s = "\"setecentos\" expected"; break;
+			case 42: s = "\"oitocentos\" expected"; break;
+			case 43: s = "\"novecentos\" expected"; break;
+			case 44: s = "\"mil\" expected"; break;
+			case 45: s = "??? expected"; break;
+			case 46: s = "invalid Factor"; break;
+			case 47: s = "invalid Number"; break;
+			case 48: s = "invalid NumberMilhar"; break;
+			case 49: s = "invalid NumberCentena"; break;
+			case 50: s = "invalid Teens"; break;
+			case 51: s = "invalid Unidade"; break;
+			case 52: s = "invalid Centena"; break;
+			case 53: s = "invalid Dezena"; break;
 			default: s = "error " + n; break;
 		}
 		printMsg(line, col, s);
