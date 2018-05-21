@@ -1,29 +1,82 @@
+package Num2Ext;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+class Teens{
+	HashMap<String,String> teensMap;
+
+	public Teens(){
+		teensMap = new HashMap<String,String>();
+		populateMap();
+	}
+	private void populateMap(){
+		teensMap.put("um", "onze");
+		teensMap.put("dois", "doze");
+		teensMap.put("tres", "treze");
+		teensMap.put("quatro", "quatorze");
+		teensMap.put("cinco", "quinze");
+		teensMap.put("seis", "dezesseis");
+		teensMap.put("sete", "dezessete");
+		teensMap.put("oito", "dezoito");
+		teensMap.put("nove", "dezenove");
+	}
+
+	public String getTeen(String unity){
+		return teensMap.get(unity);
+	}
+}
+
+
 COMPILER N2Ext
 
 public String result;
 
-String extMount(String  unidade, String dezena, String centena){
+public Teens teen;
+
+
+String extMount(String  unidade, String dezena, String centena, String milhar){
 	String result;
-	if(dezena.isEmpty()){
-		result = unidade;	
-	}else{
-		result = centena + dezena + ((unidade == "zero") ? "" : (" e " + unidade)); 
+	result = unidade;
+	if(!dezena.isEmpty()){
+		if(dezena == "dez" && unidade != "zero"){
+			result = teen.getTeen(unidade);
+		}else{
+			result = dezena + ((result == "zero") ? "" : (" e " + result));
+	}
+	}
+
+	if(!centena.isEmpty()){
+			if(centena == "cento" && result == "zero"){
+					result = "cem";
+			}else{
+			result = centena + ((result == "zero") ? "" : (" e " + result));
+		}
+	}
+	if(!milhar.isEmpty()){
+		if (result == "zero")
+			result = milhar;
+		else
+			result = milhar + ((centena.isEmpty() || dezena.isEmpty() && unidade == "zero") ? " e " + result : " " + result);
 	}
 	return result;
 }
+
+
 
 IGNORE '\t' + '\r' + '\n'
 
 PRODUCTIONS
 
-N2Ext 				(. String u = ""; String d = ""; String c = "";.)
-= Unidade<out u>	        
- [Dezena<out d>]                
- [Centena<out c>]		
-.                               (. result = extMount(u,d,c); .)
+N2Ext 			          	(. teen = new Teens(); String u = ""; String d = ""; String c = ""; String m = "";.)
+= Unidade<out u>
+  [Dezena<out d>]
+	[Centena<out c>]
+  [Milhares<out m>]      (. result = extMount(u,d,c,m); .)
+.
 
-Unidade<out String v>
-									(. v = ""; .)
+Unidade<out String v> (. v = ""; .)
 =   "0"						(. v = "zero"; .)
   | "1"						(. v = "um"; .)
   | "2"						(. v = "dois"; .)
@@ -36,8 +89,7 @@ Unidade<out String v>
   | "9"						(. v = "nove"; .)
 .
 
-Dezena<out String v>
-										(. v = ""; .)
+Dezena<out String v> (. v = ""; .)
 = "0"
  |"1"								(. v = "dez"; .)
  |"2"								(. v = "vinte"; .)
@@ -50,10 +102,9 @@ Dezena<out String v>
  |"9"								(. v = "noventa"; .)
  .
 
- Centena<out String v>
- 										(. v = ""; .)
+Centena<out String v> (. v = ""; .)
  = "0"
-  |"1"								(. v = "cem"; .)
+  |"1"								(. v = "cento"; .)
   |"2"								(. v = "duzentos"; .)
   |"3"								(. v = "trezentos"; .)
   |"4"								(. v = "quatrocentos"; .)
@@ -64,6 +115,27 @@ Dezena<out String v>
   |"9"								(. v = "novecentos"; .)
   .
 
+Milhares<out String v> (. v = ""; .)
+= "1"								(. v = "mil"; .)
+ |"2"								(. v = "dois mil"; .)
+ |"3"								(. v = "tres mil"; .)
+ |"4"								(. v = "quatro mil"; .)
+ |"5"								(. v = "cinco mil"; .)
+ |"6"								(. v = "seis mil"; .)
+ |"7"								(. v = "sete mil"; .)
+ |"8"								(. v = "oito mil"; .)
+ |"9"								(. v = "nove mil"; .)
+ .
 
-
+/* Teens<out String v>  (.v = "";.)
+= "11"								(. v = "onze"; .)
+ |"21"								(. v = "doze"; .)
+ |"31"								(. v = "treze"; .)
+ |"41"								(. v = "quatorze"; .)
+ |"51"								(. v = "quinze"; .)
+ |"61"								(. v = "dezesseis"; .)
+ |"71"								(. v = "dezessete"; .)
+ |"81"								(. v = "dezoito"; .)
+ |"91"								(. v = "dezenove"; .)
+ . */
 END N2Ext.

@@ -1,5 +1,37 @@
 
+
 package Num2Ext;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+class Teens{
+	HashMap<String,String> teensMap;
+
+	public Teens(){
+		teensMap = new HashMap<String,String>();
+		populateMap();
+	}
+	private void populateMap(){
+		teensMap.put("um", "onze");
+		teensMap.put("dois", "doze");
+		teensMap.put("tres", "treze");
+		teensMap.put("quatro", "quatorze");
+		teensMap.put("cinco", "quinze");
+		teensMap.put("seis", "dezesseis");
+		teensMap.put("sete", "dezessete");
+		teensMap.put("oito", "dezoito");
+		teensMap.put("nove", "dezenove");
+	}
+
+	public String getTeen(String unity){
+		return teensMap.get(unity);
+	}
+}
+
+
+
 
 public class Parser {
 	public static final int _EOF = 0;
@@ -18,15 +50,34 @@ public class Parser {
 
 	public String result;
 
-String extMount(String  unidade, String dezena){
+public Teens teen;
+
+
+String extMount(String  unidade, String dezena, String centena, String milhar){
 	String result;
-	if(dezena.isEmpty()){
-		result = unidade;	
-	}else{
-		result = dezena + " e " + ((unidade == "zero") ? "" : unidade); 
+	result = unidade;
+	if(!dezena.isEmpty()){
+		if(dezena == "dez" && unidade != "zero"){
+			result = teen.getTeen(unidade);
+		}else{
+			result = dezena + ((result == "zero") ? "" : (" e " + result));
+	}
+	}
+
+	if(!centena.isEmpty()){
+			if(centena == "cento" && result == "zero"){
+					result = "cem";
+			}else{
+			result = centena + ((result == "zero") ? "" : (" e " + result));
+		}
+	}
+	if(!milhar.isEmpty()){
+		result = milhar + ((centena.isEmpty() || dezena.isEmpty()) ? " e " + result : " " + result);
 	}
 	return result;
 }
+
+
 
 
 
@@ -89,13 +140,18 @@ String extMount(String  unidade, String dezena){
 	}
 	
 	void N2Ext() {
-		String u = ""; String d = "";
+		teen = new Teens(); String u = ""; String d = ""; String c = ""; String m = "";
 		u = Unidade();
-		result = u; 
 		if (StartOf(1)) {
 			d = Dezena();
 		}
-		result = extMount(u,d); 
+		if (StartOf(1)) {
+			c = Centena();
+		}
+		if (StartOf(2)) {
+			m = Milhares();
+		}
+		result = extMount(u,d,c,m); 
 	}
 
 	String  Unidade() {
@@ -215,6 +271,118 @@ String extMount(String  unidade, String dezena){
 		return v;
 	}
 
+	String  Centena() {
+		String  v;
+		v = ""; 
+		switch (la.kind) {
+		case 1: {
+			Get();
+			break;
+		}
+		case 2: {
+			Get();
+			v = "cento"; 
+			break;
+		}
+		case 3: {
+			Get();
+			v = "duzentos"; 
+			break;
+		}
+		case 4: {
+			Get();
+			v = "trezentos"; 
+			break;
+		}
+		case 5: {
+			Get();
+			v = "quatrocentos"; 
+			break;
+		}
+		case 6: {
+			Get();
+			v = "quinhentos"; 
+			break;
+		}
+		case 7: {
+			Get();
+			v = "seiscentos"; 
+			break;
+		}
+		case 8: {
+			Get();
+			v = "setecentos"; 
+			break;
+		}
+		case 9: {
+			Get();
+			v = "oitocentos"; 
+			break;
+		}
+		case 10: {
+			Get();
+			v = "novecentos"; 
+			break;
+		}
+		default: SynErr(14); break;
+		}
+		return v;
+	}
+
+	String  Milhares() {
+		String  v;
+		v = ""; 
+		switch (la.kind) {
+		case 2: {
+			Get();
+			v = "mil"; 
+			break;
+		}
+		case 3: {
+			Get();
+			v = "dois mil"; 
+			break;
+		}
+		case 4: {
+			Get();
+			v = "tres mil"; 
+			break;
+		}
+		case 5: {
+			Get();
+			v = "quatro mil"; 
+			break;
+		}
+		case 6: {
+			Get();
+			v = "cinco mil"; 
+			break;
+		}
+		case 7: {
+			Get();
+			v = "seis mil"; 
+			break;
+		}
+		case 8: {
+			Get();
+			v = "sete mil"; 
+			break;
+		}
+		case 9: {
+			Get();
+			v = "oito mil"; 
+			break;
+		}
+		case 10: {
+			Get();
+			v = "nove mil"; 
+			break;
+		}
+		default: SynErr(15); break;
+		}
+		return v;
+	}
+
 
 
 	public void Parse() {
@@ -228,7 +396,8 @@ String extMount(String  unidade, String dezena){
 
 	private static final boolean[][] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,T,T,T, T,T,T,T, T,T,T,x, x}
+		{x,T,T,T, T,T,T,T, T,T,T,x, x},
+		{x,x,T,T, T,T,T,T, T,T,T,x, x}
 
 	};
 } // end Parser
@@ -267,6 +436,8 @@ class Errors {
 			case 11: s = "??? expected"; break;
 			case 12: s = "invalid Unidade"; break;
 			case 13: s = "invalid Dezena"; break;
+			case 14: s = "invalid Centena"; break;
+			case 15: s = "invalid Milhares"; break;
 			default: s = "error " + n; break;
 		}
 		printMsg(line, col, s);
